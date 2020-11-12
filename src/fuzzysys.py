@@ -1,4 +1,5 @@
 from fuzzyset import *
+from fuzzynumbers import *
 from utils import *
 
 class FuzzyInferenceSystem:
@@ -9,10 +10,10 @@ class FuzzyInferenceSystem:
 
     # aggregation methods
 
-    def aggregation_method(self, inputs, method="mamdani")
+    def aggregation_method(self, inputs, method="mamdani"):
         dgs = self.degrees(inputs)
-        operator = self.__dict__[method]
-        miuc = lambda z: max( operator(degree, prec, z) for degree, prec in zip(dgs, self.precs) )
+        operator = FuzzyInferenceSystem.__dict__[method]
+        miuc = lambda z: max( operator(self, degree, prec, z) for degree, prec in zip(dgs, self.precs) )
         domain = join([prec.domain for prec in self.precs])
         return FuzzySet(membership=miuc, domain=domain)
 
@@ -38,7 +39,7 @@ class FuzzyInferenceSystem:
             try:
                 d[val].append(zj)
             except:
-                d[val] = []
+                d[val] = [zj]
 
         vmax = max(d.keys())
         return sum(d[vmax]) / len(d[vmax])
@@ -63,6 +64,20 @@ class FuzzyInferenceSystem:
 
             if lf == rg:
                 return z0
-
             elif lf > rg:
-                
+                beta = z0
+            else:
+                alpha = z0
+            
+            z0 = (alpha + beta) / 2
+
+if __name__ == "__main__":
+    A = TriangularFuzzyNumber(0, 2, 4)
+    B = TriangularFuzzyNumber(3, 4, 5)
+    C = TriangularFuzzyNumber(3, 4, 5)
+
+    rules = [(A, B, C)]
+    system = FuzzyInferenceSystem(rules)
+    res = system.aggregation_method((3, 4), method="larsen")
+    des = system.MOM(res)
+    print(des)
