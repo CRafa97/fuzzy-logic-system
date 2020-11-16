@@ -10,9 +10,10 @@ class FuzzyInferenceSystem:
 
     # aggregation methods
 
-    def aggregation_method(self, inputs, method="mamdani"):
-        dgs = self.degrees(inputs)
+    def aggregation_method(self, inputs, method="mamdani", input_type="singleton"):
         operator = FuzzyInferenceSystem.__dict__[method]
+        dgs_operator = FuzzyInferenceSystem.__dict__[f"{input_type}_degrees"]
+        dgs = dgs_operator(self, inputs)
         miuc = lambda z: max( operator(self, degree, prec, z) for degree, prec in zip(dgs, self.precs) )
         domain = join([prec.domain for prec in self.precs])
         return FuzzySet(membership=miuc, domain=domain)
@@ -23,26 +24,44 @@ class FuzzyInferenceSystem:
     def larsen(self, degree, prec, z):
         return degree * prec.membership(z)
 
-    def degrees(self, inputs):
+    def singleton_degrees(self, inputs):
         dgs = []
         for antc in self.antc:
             dgs.append( min (s.membership(i) for s, i in zip(antc, inputs)) )
         return dgs
 
+    def fuzzy_degrees(self, inputs):
+
+        def _common(f, s):
+            import numpy as np
+            inf, sup = join([f.domain, s.domain])
+            return max( min(f.membership(x), s.membership(x)) for x in np.arange(inf, sup + 1, 0.1) )
+
+        dgs = []
+        for antc in self.antc:
+            maxs = []
+            for f, i in zip(antc, inputs):
+                maxs.append(_common(f, i))
+            dgs.append(min(maxs))
+        return dgs
+
     # defuzzification methods
 
     def MOM(self, fs):
-        d = {}
+        vals = []
+        vmax = 0
         inf, sup = fs.domain
         for zj in range(inf, sup + 1):
-            val = fs.membership(zj)
-            try:
-                d[val].append(zj)
-            except:
-                d[val] = [zj]
+            v = fs.membership(zj)
+            if vmax < v:
+                vmax = v
+                vals = [zj]
+            elif vmax == v:
+                vals.append(zj)
+            else:
+                pass
 
-        vmax = max(d.keys())
-        return sum(d[vmax]) / len(d[vmax])
+        return sum(vals) / len(vals)
 
     def COA(self, fs):
         inf, sup = fs.domain
@@ -74,10 +93,12 @@ class FuzzyInferenceSystem:
 if __name__ == "__main__":
     A = TriangularFuzzyNumber(0, 2, 4)
     B = TriangularFuzzyNumber(3, 4, 5)
-    C = TriangularFuzzyNumber(3, 4, 5)
+    C = TriangularFuzzyNumber(0, 1, 2)
+    D = TriangularFuzzyNumber(2, 3, 4)
+    E = TriangularFuzzyNumber(2, 4, 6)
 
-    rules = [(A, B, C)]
+    rules = [(A, B, E)]
     system = FuzzyInferenceSystem(rules)
-    res = system.aggregation_method((3, 4), method="larsen")
+    res = system.aggregation_method((C, D), method="larsen", input_type="fuzzy")
     des = system.MOM(res)
     print(des)
