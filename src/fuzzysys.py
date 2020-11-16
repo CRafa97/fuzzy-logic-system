@@ -89,16 +89,3 @@ class FuzzyInferenceSystem:
                 alpha = z0
             
             z0 = (alpha + beta) / 2
-
-if __name__ == "__main__":
-    A = TriangularFuzzyNumber(0, 2, 4)
-    B = TriangularFuzzyNumber(3, 4, 5)
-    C = TriangularFuzzyNumber(0, 1, 2)
-    D = TriangularFuzzyNumber(2, 3, 4)
-    E = TriangularFuzzyNumber(2, 4, 6)
-
-    rules = [(A, B)]
-    system = FuzzyInferenceSystem(rules)
-    res = system.aggregation_method((C,), method="larsen", input_type="fuzzy")
-    des = system.MOM(res)
-    print(des)
