@@ -97,8 +97,8 @@ if __name__ == "__main__":
     D = TriangularFuzzyNumber(2, 3, 4)
     E = TriangularFuzzyNumber(2, 4, 6)
 
-    rules = [(A, B, E)]
+    rules = [(A, B)]
     system = FuzzyInferenceSystem(rules)
-    res = system.aggregation_method((C, D), method="larsen", input_type="fuzzy")
+    res = system.aggregation_method((C,), method="larsen", input_type="fuzzy")
     des = system.MOM(res)
     print(des)
