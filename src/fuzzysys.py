@@ -1,7 +1,8 @@
 from fuzzyset import *
 from fuzzynumbers import *
 from utils import *
-
+import numpy as np
+            
 class FuzzyInferenceSystem:
     def __init__(self, rules):
         self.rules = rules
@@ -33,7 +34,6 @@ class FuzzyInferenceSystem:
     def fuzzy_degrees(self, inputs):
 
         def _common(f, s):
-            import numpy as np
             inf, sup = join([f.domain, s.domain])
             return max( min(f.membership(x), s.membership(x)) for x in np.arange(inf, sup + 1, 0.1) )
 
@@ -78,8 +78,8 @@ class FuzzyInferenceSystem:
         z0 = (alpha + beta) / 2
 
         while True:
-            lf = simpson(fs.membership, alpha, z0)
-            rg = simpson(fs.membership, z0, beta)
+            lf = simpson(fs.membership, alpha, z0, 5)
+            rg = simpson(fs.membership, z0, beta, 5)
 
             if lf == rg:
                 return z0
