@@ -6,7 +6,7 @@ from fuzzysys import FuzzyInferenceSystem
 # Linguistic: Distance
 far = SigmoidalFuzzyNumber(20, 30)
 normal = GaussianFuzzyNumber(k=0.05, m=15, domain=(0, 30))
-near = FuzzyNegation(SigmoidalFuzzyNumber(0, 5))
+near = FuzzyNegation(SigmoidalFuzzyNumber(0, 10))
 
 # Linguistic: Object Speed
 move = SigmoidalFuzzyNumber(10, 20)
@@ -83,6 +83,39 @@ def main():
     res6 = fsys.aggregation_method(test, method="larsen", input_type="singleton")
     desf6 = fsys.BOA(res6)
     print(f"Grado: {desf6}\n")
+
+    # More Tests
+
+    ntest1 = (30, 15, 15,) # no pisar nada el freno
+    print("--- Using Mamdani - COA --- ")
+    nres1 = fsys.aggregation_method(ntest1, method="mamdani", input_type="singleton")
+    ndesf1 = fsys.COA(nres1)
+    print(f"Grado: {ndesf1}\n")
+
+    ntest2 = (6, 64, 7,)
+    print("--- Using Larsen - MOM --- ") # pisar bastante el freno
+    nres2 = fsys.aggregation_method(ntest2, method="larsen", input_type="singleton")
+    ndesf2 = fsys.MOM(nres2)
+    print(f"Grado: {ndesf2}\n")
+
+    ntest3 = (12, 67, 10,)
+    print("--- Using Mamdani - BOA --- ") # pisar bastante el freno
+    nres3 = fsys.aggregation_method(ntest3, method="larsen", input_type="singleton")
+    ndesf3 = fsys.BOA(nres3)
+    print(f"Grado: {ndesf3}\n")
+
+    # FuzzySet Input
+    print("  Fuzzy Sets as Input  ")
+
+    dist = TriangularFuzzyNumber(5, 11, 18)
+    speedx = FuzzySet(lambda x: x == 65, domain=(0,90))
+    obj_speed = TrapezoidalFuzzyNumber(-1, 0, 5, 15)
+
+    inputx = (dist, speedx, obj_speed)
+    print("--- Using Mamdani - COA --- ")
+    ans = fsys.aggregation_method(inputx, method="mamdani", input_type="fuzzy")
+    des = fsys.COA(ans)
+    print(f"Grado: {des}\n")
 
 if __name__ == "__main__":
     main()
