@@ -12,7 +12,7 @@ near = FuzzyNegation(SigmoidalFuzzyNumber(0, 10))
 move = SigmoidalFuzzyNumber(10, 20)
 move_slow = FuzzyFairly(move)
 move_fast = FuzzyVery(move)
-keep = TrapezoidalFuzzyNumber(-1, 0, 9, 20)
+keep = TrapezoidalFuzzyNumber(-1, 0, 10, 20)
 
 # Linguistic: Car Speed 
 slow = FuzzyNegation(SigmoidalFuzzyNumber(10, 30))
@@ -30,17 +30,17 @@ complete = FuzzySet(lambda x: x == 60, domain=(0,60))
 # (Distance, Car Speed, Object Speed) -> Brake Degree
 
 rules = [
-    (far, slow, keep, nothing),
-    (normal, slow, keep, small),
-    (normal, constant, keep, medium),
-    (near, constant, keep, big),
-    (near, fast, keep, complete),
+    (far, slow, keep, nothing), #1
+    (normal, slow, keep, small), #2
+    (normal, constant, keep, medium), #3
+    (near, constant, keep, big), #4
+    (near, fast, keep, complete), #5
 
-    (near, fast, move_slow, big),
-    (normal, constant, move_slow, medium),
-    (far, constant, move_slow, small),
-    (near, constant, move_fast, small),
-    (normal, slow, move_fast, nothing),
+    (near, fast, move_slow, big), #6
+    (normal, constant, move_slow, medium), #7
+    (far, constant, move_slow, small), #8
+    (near, constant, move_fast, small), #9
+    (normal, slow, move_fast, nothing), #10
 ]
 
 def main():

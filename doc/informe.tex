@@ -8,6 +8,8 @@
 %-----------------------------------------------------------------------------------
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 \usepackage{amssymb}
 \usepackage{informe}
 \usepackage{lipsum}
@@ -109,7 +111,7 @@
 \section*{Introducci\'on}\label{sec:intro}
 %-----------------------------------------------------------------------------------
 
-El sistema de inferencia difusa implementado presentar\'a funciones de pertenencia triangulares, trapezoidales, gaussianas y sigmoidales ademas cuenta con los metodos de agregacion de Mamdani y Larsen, con entrada de valores \textit{singleton} o sea valores precisos o como entrada conjuntos difusos, los metodos de desdifusificaci'on empleados son el Centroide (COA), Bisecci\'on (BOA) y en el caso de los M\'aximos, el MOM o Media de los M\'aximos.
+El sistema de inferencia difusa implementado presentar\'a funciones de pertenencia triangulares, trapezoidales, gaussianas y sigmoidales ademas cuenta con los metodos de agregacion de Mamdani y Larsen, con entrada de valores \textit{singleton} o sea valores precisos o como entrada conjuntos difusos, los metodos de desdifusificaci\'on empleados son el Centroide (COA), Bisecci\'on (BOA) y en el caso de los M\'aximos, el MOM o Media de los M\'aximos.
 
 Para validar dicho sistema se resolver\'a un problema cuya soluci\'on necesita de un Sistema de Inferencia y se analizaran los resultados obtenidos. 
 
@@ -148,7 +150,7 @@ Las funciones de pertenencia m\'as conocidas las cuales fueron implementadas par
 			\mu_A (x) = e^{-k(x-m)^{2}}
 		\end{align*}
 	
-	\item \textbf{Sigmoidal}: Es un conjuto difuso cuya funci\'on de pertenencia es presenta un crecimiento m\'as lento q una parte de una funci\'on triangular o trapezoidal, esta definida por dos valores $a$ y $b$ y el valor $m$, el cual usualmente es $m = \dfrac{a + b}{2}$, su funci\'on de petenencia es:
+	\item \textbf{Sigmoidal}: Es un conjuto difuso cuya funci\'on de pertenencia presenta un crecimiento m\'as lento que una parte de una funci\'on triangular o trapezoidal, esta definida por dos valores $a$, $b$ y el valor $m$, el cual usualmente es $m = \dfrac{a + b}{2}$, su funci\'on de pertenencia es:
 		\begin{align*}
 			\mu_A (x) = \begin{cases}
 				0, & x \leq a \\\\
@@ -175,20 +177,200 @@ Para la desdifusificaci\'on del conjunto resultante se implementar\'on 3 variant
 
 	\begin{enumerate}
 		\item[] \textbf{Media de los M\'aximos}: Representa el promedio de aquellos valores de control $z_j$ donde se alcanza el m\'aximo:
-			\begin{align}
+			\begin{align*}
 				z_0 = \sum_{j=1}^{k} \dfrac{z_j}{k}
-			\end{align}
+			\end{align*}
 		
 		\item[] \textbf{Centroide}: Esta estrategia genera el centro de gravedad de los conjuntos que conforman la agregaci\'on y se define como:
-			\begin{align}
+			\begin{align*}
 				z_0 = \dfrac{\sum_{j=1}^{n} \mu_{C} (z_j) \cdot z_j}{\sum_{j=1}^{n} \mu_{C} (z_j)}
-			\end{align}
-			 
+			\end{align*}
+		
+		\item[] \textbf{Bisector del \'Area}: Este m\'etodo genera el valor $z_0$ tal que particione el \'area en dos regiones iguales:
+			
+			\begin{align*}
+				\int_{\alpha}^{z_0} \mu_C (z) \;dz = \int_{z_0}^{\beta} \mu_C (z) \;dz
+			\end{align*}
+		donde $\alpha$ y $\beta$ son los extremos del dominio	
+		
 	\end{enumerate}
 
-\section*{Development}\label{sec:dev}
-  
-\lipsum[6-8]
+\subsection*{Implementaci\'on del Sistema}
+
+Expondremos a continuaci\'on las principales ideas seguidas para la implementaci\'on del sistema y como se realiza la creaci\'on del mismo. La implementaci\'on fue realizada en Python, se represent\'o entidades importantes tales como la definici\'on de conjunto difuso junto a los mencionados anteriormente, la funci\'on encargada de resolver la agregaci\'on en el sistema acepta entrada tanto de valores precisos como de valores difusos.
+
+\begin{algorithm}
+	\begin{algorithmic}
+		\STATE FuzzySet:
+		\STATE $ \;\;\; \mu_{C}: R \rightarrow [0,1] $
+		\STATE $ \;\;\; U: \text{Dominio del conjunto preciso}$
+	\end{algorithmic}
+\end{algorithm}
+
+La definici\'on de conjunto difuso esta compuesta por la funci\'on de pertenencia, la cual puede ser cualquier funci\'on cuya imagen se encuentre en $[0,1]$, y el dominio del conjunto preciso sobre el cual definimos nuestro conjunto difuso.
+
+\begin{algorithm}
+	\begin{algorithmic}
+		\STATE FuzzyInferenceSystem:
+		\STATE $\;\;\; $ Rules $ \leftarrow (A_{1i}, \;A_{2i},\; ...\;, \;C_i)$
+		\STATE $ \;\;\;$ Aggregation (input): 
+		\STATE $ \qquad\; \alpha_i \leftarrow \text{MatchingDegrees (input)}$
+		\STATE $ \qquad\; \bf{return} \;\; \mu_{C'} (z) = \bigvee_{i=1}^{n} \left[ \alpha_i \oplus \mu_{C_i} (z) \right]$
+	\end{algorithmic}
+\end{algorithm}
+
+Para determinar una agregaci\'on se procede a calcular los grados de coincidencia dependiendo del tipo de entrada para ello es necesario establecer un parametro \verb|input_type| el cuales puede ser \verb|singleton| o \verb|fuzzy| y acorde a este se emplear\'a la funci\'on correspondiente para el c\'alculo de los grados. El s\'imbolo $\oplus$ representa el operador que estamos usando acorde al m\'etodo seleccionado, para ello debemos establecer el par\'ametro \verb|method| el cual puede ser \verb|mamdani| o \verb|larsen|, empleando entonces los operadores $R_c$ y $R_p$ respectivamente a la hora de calcular la agregaci\'on.
+
+\begin{algorithm}
+	\begin{algorithmic}
+		\STATE FuzzyInferenceSystem:
+		\STATE $ \;\;\;$ MOM (fs):
+		\STATE $ \qquad\; mx \leftarrow [\;]$ 
+		\STATE $ \qquad\; \bf{for}$ $z_j \in U $
+		\STATE $ \qquad\qquad \bf{if}$ $z_j \text{es m\'aximo}$ $\bf{then}$ $ mx.add(z_j)$
+		\STATE $ \qquad\qquad \bf{endif}$
+		\STATE $ \qquad\; \bf{endfor}$ 
+		\STATE $ \qquad\; \bf{return}$ $\text{mean} (mx)$
+		\STATE
+		\STATE $ \;\;\;$ COA (fs):
+		\STATE $ \qquad\; n \leftarrow 0$ 
+		\STATE $ \qquad\; d \leftarrow 0$
+		\STATE $ \qquad\; \bf{for}$ $z_j \in U $
+		\STATE $ \qquad\qquad n \leftarrow n + \mu_{C'} (z_j) \cdot z_j$
+		\STATE $ \qquad\qquad n \leftarrow n + \mu_{C'} (z_j)$
+		\STATE $ \qquad\; \bf{endfor}$ 
+		\STATE $ \qquad\; \bf{return}$ $ n / d$
+		\STATE
+		\STATE $ \;\;\;$ BOA (fs):
+		\STATE $ \qquad\; \alpha \leftarrow \text{min} \;U$ 
+		\STATE $ \qquad\; \beta \leftarrow \text{m\'ax} \;U$
+		\STATE $ \qquad\; z_0 \leftarrow \text{BinarySearch} \;(\alpha,\; \beta,\; \mu_{C'})$
+		\STATE $ \qquad\; \bf{return} z_0$
+	\end{algorithmic}
+\end{algorithm}
+
+Los m\'etodos de difusi\'on reciben como entrada un conjunto difuso y devuelven el resultado desdifusificado, el MOM y COA ya cuentan con una forma de realizarse mientras que para el BOA se empleo b\'usqueda binaria para determinar el valor $z_0$ tal que bisecciona el \'area formada por $\mu_{C'}$
+
+\begin{algorithm}
+	\begin{algorithmic}
+		\STATE FuzzySet:
+		\STATE $\quad$ $\llcorner$ Triangular $(a_1, a_2, a_3)$
+		\STATE $\quad$ $\llcorner$ Trapezoidal $(a_1, a_2, a_3, a_4)$
+		\STATE $\quad$ $\llcorner$ Gaussian $(k, m)$
+		\STATE $\quad$ $\llcorner$ Sigmoidal $(a, b)$
+	\end{algorithmic}
+\end{algorithm}
+
+Para trabajar de forma sencilla con las funciones de pertenencia vistas anteriormente se definieron conjuntos difusos, de forma que para su creaci\'on solo sea necesario introducir los valores que definen dichas funciones 
+
+\section*{Problema Propuesto}\label{sec:dev}
+ 
+Para comprobar la implementaci\'on del sistema realizada resolveremos el siguiente problema
+
+\subsection*{Problema}
+
+Se desea desarrollar un sistema de frenado autom\'atico para un autom\'ovil con transmici\'on autom\'atica. En dicho veh\'iculo contamos con un sensor de proximidad que permite determinar la distancia entre el auto y otro que se encuentre delante de \'el adem\'as sabemos de forma precisa la velocidad del autom\'ovil el cual contiene el sistema. Adicionalmente podemos sensar la velocidad con la que se mueve el veh\'iculo que se encuentra delante. Se desea saber dadas estas condiciones cual debe ser aproximadamente el \'angulo que debe ser presionado el pedal del freno, considerando que $0$ indica que no es necesario pisar el pedal y $60$ pisar el pedal a fondo. 
+\\
+
+Las reglas que definen el sistema de frenado son las siguientes:
+
+\begin{enumerate}
+	\item[\textbf{R1:}] Si estamos lejos del veh\'iculo, vamos lento y este no se mueve entonces no pisamos el freno 
+	
+	\item[\textbf{R2:}] Si estamos a distancia media del veh\'iculo, vamos lento y este no se mueve entonces pisamos un poco el freno
+	
+	\item[\textbf{R3:}] Si estamos a distancia media del veh\'iculo, vamos a velocidad normal y este no se mueve entonces pisamos mas o menos el freno
+	
+	\item[\textbf{R4:}] Si estamos cerca del veh\'iculo, vamos a velocidad normal y este no se mueve entonces pisamos bastante el freno
+	
+	\item[\textbf{R5:}] Si estamos cerca del veh\'iculo, vamos r\'apido y este no se mueve entonces pisamos bastante el a fondo el freno
+	
+	\item[\textbf{R6:}] Si estamos cerca del veh\'iculo, vamos r\'apido y este se mueve poco entonces pisamos bastante el freno
+	
+	\item[\textbf{R7:}] Si estamos a distancia media del veh\'iculo, vamos a velocidad normal y este se mueve poco entonces pisamos mas o menos el freno
+	
+	\item[\textbf{R8:}] Si estamos lejos del veh\'iculo, vamos a velocidad normal y este se mueve poco entonces pisamos poco el freno
+		
+	\item[\textbf{R9:}] Si estamos cerca del veh\'iculo, vamos a velocidad normal y este se mueve r\'apido entonces pisamos poco el freno
+	
+	\item[\textbf{R10:}] Si estamos a distancia media del veh\'iculo, vamos lento y este se mueve r\'apido entonces no pisamos el freno
+\end{enumerate}
+
+Definamos las variables ling\"uisticas que encontramos en el problema y los conjuntos difusos que las componen con sus respectivas funciones de pertenencia:
+
+\begin{enumerate}
+	\item[] \textbf{Distancia}:
+		\begin{enumerate}
+			\item[] $T(\text{Distancia}): \{ \;\text{lejos}, \;\text{normal}, \;\text{cerca}\; \}$	
+			\item[] $U = [0, 30]$
+			\item[] $G(\text{Distancia}): \{\text{lejos}\} \cup \{\text{normal}\} \cup \{\text{cerca}\}$
+			\item[] $M = \begin{cases}
+				(\;u, \mu_{\text{cerca}} (u) \;), & u \in [0, 10] \\
+				(\;u, \mu_{\text{normal}} (u) \;), & u \in [10, 20] \\
+				(\;u, \mu_{\text{lejos}} (u) \;), & u \in [20, 30]
+			\end{cases}$
+			\item[] $\mu(u) = \begin{cases}
+			\mu_{\text{cerca}} (u) = \overline{\text{Sigmoidal}}(0, 10) \\
+			\mu_{\text{normal}} (u) = \text{Gaussian(0.05, 15)} \\
+			\mu_{\text{lejos}} (u) = \text{Sigmoidal} (20, 30)
+			\end{cases}$
+		\end{enumerate}
+	
+	\item[] \textbf{Velocidad}:
+		\begin{enumerate}
+			\item[] $T(\text{Velocidad}): \{ \;\text{lento}, \;\text{constante}, \;\text{r\'apido}\; \}$
+			\item[] $U = [10, 90]$
+			\item[] $G(\text{Velocidad}): \{\text{lento}\} \cup \{\text{constante}\} \cup \{\text{r\'apido}\}$ 
+			\item[] $M = \begin{cases}
+			(\;u, \mu_{\text{lento}} (u) \;), & u \in [10, 30] \\
+			(\;u, \mu_{\text{constantel}} (u) \;), & u \in [30, 60] \\
+			(\;u, \mu_{\text{r\'apido}} (u) \;), & u \in [60, 90]
+			\end{cases}$
+			\item[] $\mu(u) = \begin{cases}
+			\mu_{\text{lento}} (u) = \overline{\text{Sigmoidal}}(10, 30) \\
+			\mu_{\text{constantel}} (u) = \text{Gaussian(0.05, 45)} \\
+			\mu_{\text{r\'apido]}} (u) = \text{Sigmoidal} (60, 90)
+			\end{cases}$
+		\end{enumerate}
+	
+	\item[] \textbf{Variaci\'on de Velocidad}:
+		\begin{enumerate}
+			\item[] $T(\text{VV}): \{ \;\text{detenido}, \;\text{poco movimiento}, \\\;\text{mucho movimiento}\; \}$
+			\item[] $U = [0, 20]$
+			\item[] $G(\text{VV}): \{\text{detenido}\} \cup \{\text{poco movimiento}\} \cup \{\text{mucho movimiento}\}$ 
+			\item[] $M = \begin{cases}
+			(\;u, \mu_{\text{detenido}} (u) \;), & u \in [0, 10] \\
+			(\;u, \mu_{\text{movimiento}} (u) \;), & u \in [10, 20] \\
+			\end{cases}$
+			\item[] $\mu(u) = \begin{cases}
+			\mu_{\text{detenido}} (u) = \text{Trapezoidal}(-1, 0, 10, 20) \\
+			\mu_{\text{movimiento}} (u) = \text{Sigmoidal(10, 20)} \\
+			\end{cases}$
+		\end{enumerate}
+	
+	\item[] \textbf{Grado de Frenado}:
+		\begin{enumerate}
+			\item[] $T(\text{Grado}): \{ \;\text{nada}, \;\text{peque\~no}, \;\text{medio},\; \\ \text{grande}, \;\text{todo}\}$
+			\item[] $U = [0, 60]$
+			\item[] $G(\text{Grado}): \{\text{nada}\} \cup \{\text{peque\~no}\} \cup \{\text{medio}\} \cup \{\text{grande}\} \cup \{\text{todol}\}$
+			\item[] $M = \begin{cases}
+			(\;u, \mu_{\text{nada}} (u) \;), & u = 0 \\
+			(\;u, \mu_{\text{peque\~no}} (u) \;), & u \in [1, 20] \\
+			(\;u, \mu_{\text{mediano}} (u) \;), & u \in [20, 40] \\
+			(\;u, \mu_{\text{grande}} (u) \;), & u \in [40, 59] \\
+			(\;u, \mu_{\text{todo}} (u) \;), & u = 60 \\
+			\end{cases}$
+			\item[] $\mu = \begin{cases}
+			\mu_{\text{nada}} (u) = 1, \;\;\; if \;u = 0 \\
+			\mu_{\text{peque\~no}} (u) = \text{Triangular} (1, 10, 20) \\
+			\mu_{\text{mediano}} (u) = \text{Triangular} (21, 30, 40)\\
+			\mu_{\text{grande}} (u) = \text{Triangular} (40, 50, 59)\\
+			\mu_{\text{todo}} (u) = 1, \;\;\; if\; u = 60 \\
+			\end{cases}$	
+		\end{enumerate}	
+\end{enumerate}
+
+
 
 \section*{Conclussion}\label{sec:con}
 
