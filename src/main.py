@@ -99,7 +99,7 @@ def main():
     print(f"Grado: {ndesf2}\n")
 
     ntest3 = (12, 67, 10,)
-    print("--- Using Mamdani - BOA --- ") # pisar bastante el freno
+    print("--- Using Mamdani - BOA --- ") # pisar mas o menos el freno
     nres3 = fsys.aggregation_method(ntest3, method="larsen", input_type="singleton")
     ndesf3 = fsys.BOA(nres3)
     print(f"Grado: {ndesf3}\n")

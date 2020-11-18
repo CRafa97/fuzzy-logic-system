@@ -370,6 +370,75 @@ Definamos las variables ling\"uisticas que encontramos en el problema y los conj
 		\end{enumerate}	
 \end{enumerate}
 
+Antes de pasar a la construcci\'on del sistema, se debe recalcar que en la variable \textbf{Variaci\'on de Velocidad} que representa la velocidad del veh\'iculo que se encuentra delante, se considera el conjunto difuso $movimiento$ y a la hora de referirnos a la velocidad del auto se emplea los modificadores poco y mucho los cuales tienen funci\'on de pertenencia $\mu_{poco} (z)= \sqrt{\mu (z)}$ y $\mu_{mucho} (z)= \mu (z) ^{2}$ respectivamente.
+
+Los valores de grado que representan no pisar el freno o pisarlo por completo son valores precisos por lo tanto se aplica la fusificaci\'on para valores $singleton$.
+
+El conjunto detenido representa aquellos valores de velocidad el auto que se tiene delante para los cuales podemos considerar que este detenido, por lo tanto se emplea un conjunto con funci\'on trapezoidal para representalo donde los valores $a_2$ y $a_3$ definen el intervalo de velocidad para el cual se considerar\'a como detenido, el valor $a_1 = -1$ ya que en este caso los valores son mayores que 0 y se necesita realizar la representaci\'on de una funci\'on trapezoidal con un valor infinito.
+
+Para empezar a definir el sistema, debemos identificar las variables las cuales corresponden con las expuestas anteriormente, tambi\'en decidir el m\'etodo de inferencia a usar por el sistema, com\'unmente se emplea el m\'etodo de Mamdani aunque para realizar las pruebas del sistema emplearemos tambien el de Larsen.
+La fusificaci\'on de los datos ya se encuentra representada para cada una de las variables ling\"usticas expuestas anteriormente, con respecto a la normalizaci\'on de los datos se decide no aplicar ninguna t\'ecnica para que exista un mayor entendimiento a la hora de interpretar los resultados, adem\'as los dominios de las variables ling\"uisticas estan bien definidos. El espacio de las variables queda compuesto por los conjuntos disjuntos que forman las variables ling\"uisticas antecedentes para el problema y sus dimensiones ya son conocidas.
+
+Las reglas definidas para la construccion del sistema pasan a escribirse de la siguiente forma:
+	\begin{align*}
+		\bf{if} \;\text{lejos}, \;\text{lento}\; \bf{and} \;\text{detenido} \;\bf{then}\;\text{nada}
+	\end{align*}
+
+Asi sucesivamente construimos las reglas empleando las divisiones realizadas en el espacio de las variables y obtendremos la entrada para nuestro sistema de inferencia.
+
+Debemos para obtener un resultado preciso decidir el m\'etodo de desfusificaci\'on, uno de los m\'as usado es COA pero para realizar las pruebas emplearemos todos los implementados.
+
+\subsection*{Pruebas realizadas al sistema}
+
+Para probar el sistema emplearemos la entrada $(10, 40, 1)$, probaremos los 2 m\'etodos de agregaci\'on en conjunto con los 3 m\'etodos de difusificaci\'on, la salida del programa ser\'a:
+
+\begin{verbatim}
+	          --- Test Mamdani - COA --- 
+	          Grado: 20.443779372233646
+	
+	          --- Test Mamdani - MOM --- 
+	          Grado: 20.5
+	
+	          --- Test Mamdani - BOA --- 
+	          Grado: 11.25
+	
+	          --- Test Larsen - COA --- 
+	          Grado: 20.333333333333336
+	
+	
+	          --- Test Larsen - MOM --- 
+	          Grado: 20.0
+	
+	          --- Test Larsen - BOA --- 
+	          Grado: 10.0048828125
+\end{verbatim}
+
+Los valores obtenidos entran dentro de pisar poco el freno, lo cual es acertado si vemos que los datos corresponden con la regla \textbf{R2}. Los valores de COA y MOM son muy similares mientras que el de BOA difiere devido a que este valor no es central sino que realiza la bisecci\'on del \'area de la funci\'on de pertenencia. Ahora probemos otras entradas al sistema empleando diversas combinaciones de los m\'etodos del sistema
+
+\begin{verbatim}
+	          --- Using Mamdani - COA --- 
+	          In: (30, 15, 15) 
+	          Grado: 0.004914457256137396
+	          Esperado: No pisar el freno
+	
+	-         -- Using Larsen - MOM --- 
+	          In: (6, 64, 7)
+	          Grado: 55.0
+	          Esperado: Pisar bastante el freno
+	
+	          --- Using Mamdani - BOA --- 
+	          In: (12, 67, 10)
+	          Grado: 30.0
+	          Esperado: Pisar mas o menos el freno
+\end{verbatim}
+
+Hasta ahora hemos usado como entrada al sistema valores precisos, pero es posible que nuestro sensor de distancia no siempre de un valor correcto o que no sea posible determinar de forma precisa la velocidad del auto que este delante nuestro podriamos entonces representar en ocasiones estas mediciones como un conjunto difuso. Supongamos que si conocemos la velocidad de nuestro auto la cual es $65$, pero no de forma segura las otras dos variables las cuales las representaremos con dos conjuntos difuso $D = \text{Triangular} (5, 11, 18)$ y $S = \text{Trapezoidal} (-1, 0, 5, 15)$, representamos el valor de la velocidad de nuestro auto como un conjunto difuso $V$ y construimos la entrada al sistema $(D, V, S)$, para ello establecemos que nuestra entrada ser\'a conjuntos difusos y obtenemos:
+
+\begin{verbatim}
+	              Fuzzy Sets as Input  
+	          --- Using Mamdani - COA --- 
+	          Grado: 50.555553325387486
+\end{verbatim}
 
 
 \section*{Conclussion}\label{sec:con}
