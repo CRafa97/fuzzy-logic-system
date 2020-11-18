@@ -1,0 +1,205 @@
+%===================================================================================
+% PREÁMBULO
+%-----------------------------------------------------------------------------------
+\documentclass[a4paper,10pt,twocolumn]{article}
+
+%===================================================================================
+% Paquetes
+%-----------------------------------------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{informe}
+\usepackage{lipsum}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{algorithmic}
+\usepackage[pdftex]{hyperref}
+%-----------------------------------------------------------------------------------
+% Configuración
+%-----------------------------------------------------------------------------------
+\hypersetup{colorlinks,%
+	    citecolor=black,%
+	    filecolor=black,%
+	    linkcolor=black,%
+	    urlcolor=blue}
+
+%===================================================================================
+
+
+
+%===================================================================================
+% Presentacion
+%-----------------------------------------------------------------------------------
+% Título
+%-----------------------------------------------------------------------------------
+\title{Sistema de Inferencia Difusa}
+
+%-----------------------------------------------------------------------------------
+% Autores
+%-----------------------------------------------------------------------------------
+\author{\\
+	\name Carlos Rafael Ortega Lezcano \\ \addr Grupo C411 }
+
+
+%-----------------------------------------------------------------------------------
+% Tutores
+%-----------------------------------------------------------------------------------
+%\tutors{\\}
+
+%-----------------------------------------------------------------------------------
+% Headings
+%-----------------------------------------------------------------------------------
+%\jcematcomheading{\the\year}{1-\pageref{end}}{Carlos Rafael}
+
+%-----------------------------------------------------------------------------------
+%\ShortHeadings{Simulacio\'n basada en Eventos Discretos}{Carlos Rafael}
+%===================================================================================
+
+
+
+%===================================================================================
+% DOCUMENTO
+%-----------------------------------------------------------------------------------
+\begin{document}
+
+%-----------------------------------------------------------------------------------
+% NO BORRAR ESTA LINEA!
+%-----------------------------------------------------------------------------------
+\twocolumn[
+%-----------------------------------------------------------------------------------
+
+\maketitle
+
+%===================================================================================
+% Resumen y Abstract
+%-----------------------------------------------------------------------------------
+\selectlanguage{spanish} % Para producir el documento en Español
+
+%-----------------------------------------------------------------------------------
+% Palabras clave
+%-----------------------------------------------------------------------------------
+%\begin{keywords}
+%	Separadas,
+%	Por,
+%	Comas.
+%\end{keywords}
+
+%-----------------------------------------------------------------------------------
+% Temas
+%-----------------------------------------------------------------------------------
+%\begin{topics}
+%	Tema, Subtema.
+%\end{topics}
+
+
+%-----------------------------------------------------------------------------------
+% NO BORRAR ESTAS LINEAS!
+%-----------------------------------------------------------------------------------
+\vspace{0.8cm}
+]
+%-----------------------------------------------------------------------------------
+
+
+%===================================================================================
+
+%===================================================================================
+% Introducción
+%-----------------------------------------------------------------------------------
+\section*{Introducci\'on}\label{sec:intro}
+%-----------------------------------------------------------------------------------
+
+El sistema de inferencia difusa implementado presentar\'a funciones de pertenencia triangulares, trapezoidales, gaussianas y sigmoidales ademas cuenta con los metodos de agregacion de Mamdani y Larsen, con entrada de valores \textit{singleton} o sea valores precisos o como entrada conjuntos difusos, los metodos de desdifusificaci'on empleados son el Centroide (COA), Bisecci\'on (BOA) y en el caso de los M\'aximos, el MOM o Media de los M\'aximos.
+
+Para validar dicho sistema se resolver\'a un problema cuya soluci\'on necesita de un Sistema de Inferencia y se analizaran los resultados obtenidos. 
+
+\section*{Caracter\'isticas del Sistema de Inferencia }
+
+El sistema implementado se compone primeramente por las reglas \textit{if-then} que definen el problema a resolver, los m\'etodos de agregaci\'on de Mamdani y Larsen y los m\'etodos de desdifusicificaci\'on.
+
+\subsection*{Funciones de Pertenencia}
+
+Las funciones de pertenencia m\'as conocidas las cuales fueron implementadas para comodidad a la hora de emplear el sistema fueron:
+
+\begin{enumerate}
+	\item \textbf{Triangulares}: Es un conjunto difuso representado por 3 puntos $A = (a_1, a_2, a_3)$ y su funci\'on de pretenencia es:
+		\begin{align*}
+			\mu_A (x) = \begin{cases}
+				0, & x < a_1 \\\\
+				\dfrac{x - a_1}{a_2 - a_1}, & a_1 \leq x \leq a_2 \\\\
+				\dfrac{a_3 - x}{a_3 - a_2}, & a_2 \leq x \leq a_3 \\\\
+				0, & x > a_3
+			\end{cases}
+		\end{align*}
+		
+	\item \textbf{Trapezoidales}: Es un conjunto difuso representado por 4 puntos, $A = (a_1, a_2, a_3, a_4) $ y su funci\'on de pretenencia es:
+		\begin{align*}
+		\mu_A (x) = \begin{cases}
+			0, & x < a_1 \\\\
+			\dfrac{x - a_1}{a_2 - a_1}, & a_1 \leq x \leq a_2 \\\\
+			1, & a_2 \leq x \leq a_3 \\\\
+			\dfrac{a_4 - x}{a_4 - a_3}, & a_3 \leq x \leq a_4 \\\\
+			0, & x > a_4
+		\end{cases}
+		\end{align*}
+	
+	\item \textbf{Gaussiana}: Es un conjunto difuso cuya funci\'on de pertenecia es una funci\'on exponencial definida por dos valores $k$ y $m$, su representacion corresponde con la campana de Gauss:
+		\begin{align*}
+			\mu_A (x) = e^{-k(x-m)^{2}}
+		\end{align*}
+	
+	\item \textbf{Sigmoidal}: Es un conjuto difuso cuya funci\'on de pertenencia es presenta un crecimiento m\'as lento q una parte de una funci\'on triangular o trapezoidal, esta definida por dos valores $a$ y $b$ y el valor $m$, el cual usualmente es $m = \dfrac{a + b}{2}$, su funci\'on de petenencia es:
+		\begin{align*}
+			\mu_A (x) = \begin{cases}
+				0, & x \leq a \\\\
+				2\left[ \dfrac{x - a}{b - a}
+				\right]^{2}, & a < x \leq m	 \\\\
+				1 - 2 \left[
+				\dfrac{x - b}{b - a}
+				\right]^{2}, & m < x < b \\\\
+				1, & x \geq b
+			\end{cases}
+		\end{align*}
+\end{enumerate}
+
+\subsection*{M\'etodos de Agregaci\'on y Desdifusificaci\'on}
+
+El sistema emplea los m\'etodos de Mamdani y Larsen para determinar una agregaci\'on, se determinan los valores de los $\alpha_i$ dependiendo del tipo de entrada y luego se determina la funci\'on de pertenencia para la agregaci\'on $C'$:
+	\begin{enumerate}
+		\item[] \textbf{Mamdani}: $\mu_{C'} (z) = \bigvee_{i=1}^{n} \left[ \alpha_i  \wedge \mu_{C_i} (z) \right]$ 
+		
+		\item[] \textbf{Larsen}: $\mu_{C'} (z) = \bigvee_{i=1}^{n} \left[ \alpha_i \cdot \mu_{C_i} (z) \right]$
+	\end{enumerate}
+
+Para la desdifusificaci\'on del conjunto resultante se implementar\'on 3 variantes:
+
+	\begin{enumerate}
+		\item[] \textbf{Media de los M\'aximos}: Representa el promedio de aquellos valores de control $z_j$ donde se alcanza el m\'aximo:
+			\begin{align}
+				z_0 = \sum_{j=1}^{k} \dfrac{z_j}{k}
+			\end{align}
+		
+		\item[] \textbf{Centroide}: Esta estrategia genera el centro de gravedad de los conjuntos que conforman la agregaci\'on y se define como:
+			\begin{align}
+				z_0 = \dfrac{\sum_{j=1}^{n} \mu_{C} (z_j) \cdot z_j}{\sum_{j=1}^{n} \mu_{C} (z_j)}
+			\end{align}
+			 
+	\end{enumerate}
+
+\section*{Development}\label{sec:dev}
+  
+\lipsum[6-8]
+
+\section*{Conclussion}\label{sec:con}
+
+\lipsum[9-11]
+
+\begin{thebibliography}{9}
+	
+\end{thebibliography}
+
+\label{end}
+
+\end{document}
+
+%===================================================================================
