@@ -111,13 +111,13 @@
 \section*{Introducci\'on}\label{sec:intro}
 %-----------------------------------------------------------------------------------
 
-El sistema de inferencia difusa implementado presentar\'a funciones de pertenencia triangulares, trapezoidales, gaussianas y sigmoidales ademas cuenta con los metodos de agregacion de Mamdani y Larsen, con entrada de valores \textit{singleton} o sea valores precisos o como entrada conjuntos difusos, los metodos de desdifusificaci\'on empleados son el Centroide (COA), Bisecci\'on (BOA) y en el caso de los M\'aximos, el MOM o Media de los M\'aximos.
+El sistema de inferencia difusa implementado presentar\'a funciones de pertenencia triangulares, trapezoidales, gaussianas y sigmoidales ademas cuenta con los metodos de agregacion de Mamdani y Larsen, con entrada de valores \textit{singleton} o sea valores precisos o como entrada conjuntos difusos, los metodos de desfusificaci\'on empleados son el Centroide (COA), Bisecci\'on (BOA) y en el caso de los M\'aximos, el MOM o Media de los M\'aximos.
 
 Para validar dicho sistema se resolver\'a un problema cuya soluci\'on necesita de un Sistema de Inferencia y se analizaran los resultados obtenidos. 
 
 \section*{Caracter\'isticas del Sistema de Inferencia }
 
-El sistema implementado se compone primeramente por las reglas \textit{if-then} que definen el problema a resolver, los m\'etodos de agregaci\'on de Mamdani y Larsen y los m\'etodos de desdifusicificaci\'on.
+El sistema implementado se compone primeramente por las reglas \textit{if-then} que definen el problema a resolver, los m\'etodos de agregaci\'on de Mamdani y Larsen y los m\'etodos de desfusicificaci\'on.
 
 \subsection*{Funciones de Pertenencia}
 
@@ -164,7 +164,7 @@ Las funciones de pertenencia m\'as conocidas las cuales fueron implementadas par
 		\end{align*}
 \end{enumerate}
 
-\subsection*{M\'etodos de Agregaci\'on y Desdifusificaci\'on}
+\subsection*{M\'etodos de Agregaci\'on y Desfusificaci\'on}
 
 El sistema emplea los m\'etodos de Mamdani y Larsen para determinar una agregaci\'on, se determinan los valores de los $\alpha_i$ dependiendo del tipo de entrada y luego se determina la funci\'on de pertenencia para la agregaci\'on $C'$:
 	\begin{enumerate}
@@ -249,7 +249,7 @@ Para determinar una agregaci\'on se procede a calcular los grados de coincidenci
 	\end{algorithmic}
 \end{algorithm}
 
-Los m\'etodos de difusi\'on reciben como entrada un conjunto difuso y devuelven el resultado desdifusificado, el MOM y COA ya cuentan con una forma de realizarse mientras que para el BOA se empleo b\'usqueda binaria para determinar el valor $z_0$ tal que bisecciona el \'area formada por $\mu_{C'}$
+Los m\'etodos de difusi\'on reciben como entrada un conjunto difuso y devuelven el resultado desfusificado, el MOM y COA ya cuentan con una forma de realizarse mientras que para el BOA se empleo b\'usqueda binaria para determinar el valor $z_0$ tal que bisecciona el \'area formada por $\mu_{C'}$
 
 \begin{algorithm}
 	\begin{algorithmic}
@@ -269,7 +269,7 @@ Para comprobar la implementaci\'on del sistema realizada resolveremos el siguien
 
 \subsection*{Problema}
 
-Se desea desarrollar un sistema de frenado autom\'atico para un autom\'ovil con transmici\'on autom\'atica. En dicho veh\'iculo contamos con un sensor de proximidad que permite determinar la distancia entre el auto y otro que se encuentre delante de \'el adem\'as sabemos de forma precisa la velocidad del autom\'ovil el cual contiene el sistema. Adicionalmente podemos sensar la velocidad con la que se mueve el veh\'iculo que se encuentra delante. Se desea saber dadas estas condiciones cual debe ser aproximadamente el \'angulo que debe ser presionado el pedal del freno, considerando que $0$ indica que no es necesario pisar el pedal y $60$ pisar el pedal a fondo. 
+Se desea desarrollar un sistema de frenado autom\'atico para un autom\'ovil con transmisi\'on autom\'atica. En dicho veh\'iculo contamos con un sensor de proximidad que permite determinar la distancia entre el auto y otro que se encuentre delante de \'el adem\'as sabemos de forma precisa la velocidad del autom\'ovil el cual contiene el sistema. Adicionalmente podemos sensar la velocidad con la que se mueve el veh\'iculo que se encuentra delante. Se desea saber dadas estas condiciones cual debe ser aproximadamente el \'angulo que debe ser presionado el pedal del freno, considerando que $0$ indica que no es necesario pisar el pedal y $60$ pisar el pedal a fondo. 
 \\
 
 Las reglas que definen el sistema de frenado son las siguientes:
